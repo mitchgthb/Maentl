@@ -1,0 +1,6 @@
+@Maentl_HostAddress = http://localhost:5145
+
+GET {{Maentl_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
