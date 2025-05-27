@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Maentl.Migrations
 {
     [DbContext(typeof(MaentlDbContext))]
-    [Migration("20250526133359_InitialCreate")]
+    [Migration("20250526171257_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
