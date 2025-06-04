@@ -3,7 +3,22 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.13.35931.197
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maentl", "Maentl\Maentl.csproj", "{00C081BA-AA14-467D-B91D-E682E62AC725}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maentl.WebApi", "Maentl\Maentl.WebApi.csproj", "{00C081BA-AA14-467D-B91D-E682E62AC725}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}"
+	ProjectSection(SolutionItems) = preProject
+		express-frontend\package.json = express-frontend\package.json
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maentl.SQL.Model", "Maentl.SQL.Model\Maentl.SQL.Model.csproj", "{79EF3BB1-9FEB-4392-A19D-7C25A80CD54C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DTO", "DTO\DTO.csproj", "{ADEB1B44-AC54-4B7B-8AFD-BB99F920A47E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Enums", "Enums\Enums.csproj", "{89224CC1-47B2-4B81-AEF5-815724EDBD20}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BL", "BL\BL.csproj", "{35EC14FC-4B6C-4920-BAAB-269A9E0499E4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maentl.SQL.Repository", "Maentl.SQL.Repository\Maentl.SQL.Repository.csproj", "{34F80396-EF25-4770-9A38-D1C5999B1899}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +30,26 @@ Global
 		{00C081BA-AA14-467D-B91D-E682E62AC725}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{00C081BA-AA14-467D-B91D-E682E62AC725}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{00C081BA-AA14-467D-B91D-E682E62AC725}.Release|Any CPU.Build.0 = Release|Any CPU
+		{79EF3BB1-9FEB-4392-A19D-7C25A80CD54C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79EF3BB1-9FEB-4392-A19D-7C25A80CD54C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79EF3BB1-9FEB-4392-A19D-7C25A80CD54C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79EF3BB1-9FEB-4392-A19D-7C25A80CD54C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ADEB1B44-AC54-4B7B-8AFD-BB99F920A47E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ADEB1B44-AC54-4B7B-8AFD-BB99F920A47E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ADEB1B44-AC54-4B7B-8AFD-BB99F920A47E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ADEB1B44-AC54-4B7B-8AFD-BB99F920A47E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{89224CC1-47B2-4B81-AEF5-815724EDBD20}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{89224CC1-47B2-4B81-AEF5-815724EDBD20}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{89224CC1-47B2-4B81-AEF5-815724EDBD20}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{89224CC1-47B2-4B81-AEF5-815724EDBD20}.Release|Any CPU.Build.0 = Release|Any CPU
+		{35EC14FC-4B6C-4920-BAAB-269A9E0499E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{35EC14FC-4B6C-4920-BAAB-269A9E0499E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{35EC14FC-4B6C-4920-BAAB-269A9E0499E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{35EC14FC-4B6C-4920-BAAB-269A9E0499E4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{34F80396-EF25-4770-9A38-D1C5999B1899}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{34F80396-EF25-4770-9A38-D1C5999B1899}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{34F80396-EF25-4770-9A38-D1C5999B1899}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{34F80396-EF25-4770-9A38-D1C5999B1899}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

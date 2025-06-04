@@ -1,15 +1,13 @@
-﻿using Maentl.Models;
-using Maentl.Services;
-using Microsoft.AspNetCore.Authorization;
+﻿using BL.Interfaces;
+using DTO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Maentl.Controllers
+namespace Maentl.WebApi.Controllers
 {
-    [Authorize]
-    [ApiController]
     [Route("api/[controller]")]
-    public class UsersController : Controller
+    [ApiController]
+    public class UsersController : ControllerBase
     {
         private readonly IUserService _userService;
 
@@ -21,15 +19,15 @@ namespace Maentl.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var users = await _userService.GetAllUsersAsync();
+            var users = await _userService.GetAllAsync();
             return Ok(users);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(User user)
+        public async Task<IActionResult> Create(UserDto user)
         {
-            await _userService.CreateUserAsync(user);
-            return CreatedAtAction(nameof(GetAll), new { id = user.Id }, user);
+            await _userService.CreateOrUpdateAsync(user);
+            return Ok();
         }
     }
 }
