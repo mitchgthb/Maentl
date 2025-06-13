@@ -1,5 +1,8 @@
-﻿using BL.Interfaces;
+﻿using BL.DTOAdapters;
+using BL.Interfaces;
+using BL.Observers;
 using DTO;
+using Maentl.SQL.Repository.WorkEntries;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,34 +13,74 @@ namespace BL.Services
 {
     public class WorkEntryService : IWorkEntryService
     {
-        public Task<IEnumerable<WorkEntryDto>> GetAllByUserAsync(string userEmail)
+        private readonly IWorkEntryRepository _repository;
+        private readonly WorkObserverHubBridge _observer;
+
+        public WorkEntryService(IWorkEntryRepository repository, WorkObserverHubBridge observer)
         {
-            throw new NotImplementedException();
+            _repository = repository;
+            _observer = observer;
         }
 
-        public Task<WorkEntryDto> GetByIdAsync(int id)
+        public async Task<IEnumerable<WorkEntryDto>> GetAllByUserAsync(string userEmail)
         {
-            throw new NotImplementedException();
+            var entries = await _repository.GetByUserAsync(userEmail);
+            return entries.Select(WorkEntryMapper.ToDto);
         }
 
-        public Task<WorkEntryDto> CreateAsync(WorkEntryDto dto)
+        public async Task<WorkEntryDto> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            var entity = await _repository.GetByIdAsync(id);
+            return entity == null ? null : WorkEntryMapper.ToDto(entity);
         }
 
-        public Task<bool> ApproveAsync(int id, string approverEmail)
+        public async Task<WorkEntryDto> CreateAsync(WorkEntryDto dto)
         {
-            throw new NotImplementedException();
+            var entity = WorkEntryMapper.ToEntity(dto);
+            entity.CreatedAt = DateTime.UtcNow;
+
+            await _repository.AddAsync(entity);
+            await _observer.NotifyCreatedAsync(entity.Id);
+
+            return WorkEntryMapper.ToDto(entity);
         }
 
-        public Task<bool> DeleteAsync(int id)
+        public async Task<bool> SaveAsync(WorkEntryDto dto)
         {
-            throw new NotImplementedException();
+            var entity = await _repository.GetByIdAsync(dto.Id);
+            if (entity == null) return false;
+
+            WorkEntryMapper.UpdateEntity(dto, entity);
+            await _repository.UpdateAsync(entity);
+            return true;
         }
 
-        public Task<bool> SaveAsync(WorkEntryDto dto)
+        public async Task<bool> ApproveAsync(int id, string approverEmail)
         {
-            throw new NotImplementedException();
+            var entity = await _repository.GetByIdAsync(id);
+            if (entity == null) return false;
+
+            entity.IsApproved = true;
+            entity.ApprovedBy = approverEmail;
+            entity.ApprovedAt = DateTime.UtcNow;
+
+            await _repository.UpdateAsync(entity);
+            await _observer.NotifyApprovedAsync(id);
+
+            return true;
         }
+
+
+        public async Task<bool> DeleteAsync(int id)
+        {
+            var entity = await _repository.GetByIdAsync(id);
+            if (entity == null) return false;
+
+            await _repository.DeleteAsync(entity);
+            await _observer.NotifyDeletedAsync(id);
+
+            return true;
+        }
+
     }
 }

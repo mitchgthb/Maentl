@@ -1,5 +1,9 @@
-﻿using BL.Interfaces;
+﻿using BL.DTOAdapters;
+using BL.Interfaces;
 using DTO;
+using Maentl.SQL.Model;
+using Maentl.SQL.Repository.Interface;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,29 +14,55 @@ namespace BL.Services
 {
     public class ProjectService : IProjectService
     {
-        public Task<IEnumerable<ProjectDto>> GetAllAsync()
+        private readonly IRepository<Project, int> _projectRepo;
+
+        public ProjectService(IRepository<Project, int> projectRepo)
         {
-            throw new NotImplementedException();
+            _projectRepo = projectRepo;
         }
 
-        public Task<ProjectDto> GetByIdAsync(int id)
+        public async Task<IEnumerable<ProjectDto>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            var projects = await _projectRepo.Query()
+                .Where(p => !p.IsArchived)
+                .ToListAsync();
+
+            return projects.Select(ProjectMapper.ToDto);
         }
 
-        public Task<ProjectDto> CreateAsync(ProjectDto dto)
+        public async Task<ProjectDto> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            var project = await _projectRepo.GetByIdAsync(id);
+            return project == null ? null : ProjectMapper.ToDto(project);
         }
 
-        public Task<bool> ArchiveAsync(int id)
+        public async Task<ProjectDto> CreateAsync(ProjectDto dto)
         {
-            throw new NotImplementedException();
+            var entity = ProjectMapper.ToEntity(dto);
+            entity.CreatedAt = DateTime.UtcNow;
+
+            await _projectRepo.AddAsync(entity);
+
+            return ProjectMapper.ToDto(entity);
         }
 
-        public Task<bool> DeleteAsync(int id)
+        public async Task<bool> ArchiveAsync(int id)
         {
-            throw new NotImplementedException();
+            var project = await _projectRepo.GetByIdAsync(id);
+            if (project == null) return false;
+
+            project.IsArchived = true;
+            await _projectRepo.UpdateAsync(project);
+            return true;
+        }
+
+        public async Task<bool> DeleteAsync(int id)
+        {
+            var project = await _projectRepo.GetByIdAsync(id);
+            if (project == null) return false;
+
+            await _projectRepo.DeleteAsync(project);
+            return true;
         }
     }
 }

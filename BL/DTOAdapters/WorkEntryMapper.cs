@@ -56,5 +56,23 @@ namespace BL.DTOAdapters
                 ProjectId = dto.ProjectId
             };
         }
+
+        public static void UpdateEntity(WorkEntryDto dto, WorkEntry entity)
+        {
+            entity.StartTime = dto.StartTime;
+            entity.EndTime = dto.EndTime;
+            entity.Notes = dto.Notes;
+            entity.Status = dto.Status;
+            entity.WorkType = dto.WorkType;
+            entity.IsBillable = dto.IsBillable;
+            entity.IsApproved = dto.IsApproved;
+            entity.ApprovedBy = dto.ApprovedBy;
+            entity.ApprovedAt = dto.ApprovedAt;
+            entity.ProjectId = dto.ProjectId;
+            entity.SourceType = dto.SourceType;
+            entity.SourceReference = dto.SourceReference;
+            entity.EffortHours = dto.EffortHours;
+        }
+
     }
 }

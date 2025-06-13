@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",                     // emit modern JS
+    "lib": ["DOM", "DOM.Iterable", "ESNext"], 
+    "module": "ESNext",                     // keep ES module syntax for Vite
+    "moduleResolution": "node",
+    "jsx": "react-jsx",                     // the new JSX transform
+    "strict": true,                         // all strict–type checks on
+    "esModuleInterop": true,                // allow default imports from CJS
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,                // required for tsx with Vite
+    "noEmit": true,                         // we let Vite handle actual output
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
+  },
+  "include": ["src", "postcss.config.cjs", "next.config.mjs", "vite-env.d.ts", "node_modules/@shadcn/ui/**/*"],                       // only type–check your source
+  "exclude": ["node_modules"]
+}

@@ -1,5 +1,7 @@
 ﻿using BL.Interfaces;
 using DTO;
+using Enums;
+using Maentl.SQL.Model;
 using Maentl.SQL.Repository.Users;
 
 namespace BL.Services
@@ -21,23 +23,60 @@ namespace BL.Services
                 Id = u.Id,
                 Email = u.Email,
                 DisplayName = u.DisplayName,
-                Role = u.Role
+                Role = u.Role,
+                IsActive = u.IsActive
             });
         }
 
-        public Task<UserDto> GetByEmailAsync(string email)
+        public async Task<UserDto> GetByEmailAsync(string email)
         {
-            throw new NotImplementedException();
+            var user = await _repo.GetByEmailAsync(email);
+            if (user == null) return null;
+
+            return new UserDto
+            {
+                Id = user.Id,
+                Email = user.Email,
+                DisplayName = user.DisplayName,
+                Role = user.Role,
+                IsActive = user.IsActive
+            };
         }
 
-        public Task<UserDto> CreateOrUpdateAsync(UserDto dto)
+        public async Task<UserDto> CreateOrUpdateAsync(UserDto dto)
         {
-            throw new NotImplementedException();
+            var existing = await _repo.GetByEmailAsync(dto.Email);
+            if (existing == null)
+            {
+                var newUser = new User
+                {
+                    Email = dto.Email,
+                    DisplayName = dto.DisplayName,
+                    Role = dto.Role,
+                    IsActive = true
+                };
+                await _repo.CreateAsync(newUser);
+                dto.Id = newUser.Id;
+            }
+            else
+            {
+                existing.DisplayName = dto.DisplayName;
+                existing.Role = dto.Role;
+                await _repo.UpdateAsync(existing);
+                dto.Id = existing.Id;
+            }
+
+            return dto;
         }
 
-        public Task<bool> DeactivateAsync(string email)
+        public async Task<bool> DeactivateAsync(string email)
         {
-            throw new NotImplementedException();
+            var user = await _repo.GetByEmailAsync(email);
+            if (user == null) return false;
+
+            user.IsActive = false;
+            await _repo.UpdateAsync(user);
+            return true;
         }
     }
 }

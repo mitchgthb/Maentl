@@ -1,4 +1,5 @@
 ﻿using DTO;
+using Maentl.SQL.Model;
 
 namespace BL.Strategy
 {
@@ -15,6 +16,12 @@ namespace BL.Strategy
                 return 45;
 
             return 30; // default
+        }
+        public double EstimateEffort(object source)
+        {
+            if (source is not EmailActivity email) return 0;
+            int wordCount = email.Subject?.Split(' ').Length ?? 0;
+            return Math.Max(1.0, wordCount / 20.0);
         }
     }
 }

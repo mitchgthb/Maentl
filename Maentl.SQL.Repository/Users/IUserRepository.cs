@@ -11,5 +11,7 @@ namespace Maentl.SQL.Repository.Users
     {
         Task<IEnumerable<User>> GetAllAsync();
         Task CreateAsync(User user);
+        Task<User> GetByEmailAsync(string email);
+        Task UpdateAsync(User user);
     }
 }

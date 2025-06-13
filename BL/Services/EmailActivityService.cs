@@ -23,7 +23,7 @@ namespace BL.Services
         public async Task<List<EmailActivityDto>> GetForUserAsync(string userEmail)
         {
             var results = await _db.EmailActivities
-                .Where(x => x.UserEmail == userEmail)
+                .Where(x => x.UserEmail.ToLower() == userEmail.ToLower())
                 .ToListAsync();
 
             return results.Select(EmailActivityMapper.ToDto).ToList();
@@ -41,9 +41,15 @@ namespace BL.Services
             var exists = await _db.EmailActivities.AnyAsync(x => x.Id == entity.Id);
 
             if (exists)
+            {
+                entity.ModifiedAt = DateTime.UtcNow;
                 _db.EmailActivities.Update(entity);
+            }
             else
-                await _db.EmailActivities.AddAsync(entity);
+            {
+                entity.CreatedAt = DateTime.UtcNow;
+                _db.EmailActivities.Add(entity);
+            }
 
             return (await _db.SaveChangesAsync()) > 0;
         }

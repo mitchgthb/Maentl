@@ -22,28 +22,37 @@ namespace BL.Services
 
         public async Task<List<CalendarEventDto>> GetEventsForUserAsync(string userEmail)
         {
-            var events = await _db.CalendarEvents
-                .Where(e => e.UserEmail == userEmail)
-                .ToListAsync();
+            return (await _db.CalendarEvents
+                .Where(e => e.UserEmail.ToLower() == userEmail.ToLower())
+                .ToListAsync())
+                .Select(CalendarEventMapper.ToDto)
+                .ToList();
 
-            return events.Select(CalendarEventMapper.ToDto).ToList();
         }
 
-        public async Task<CalendarEventDto> GetEventByIdAsync(Guid id)
+        public async Task<CalendarEventDto?> GetEventByIdAsync(Guid id)
         {
             var entity = await _db.CalendarEvents.FindAsync(id);
-            return CalendarEventMapper.ToDto(entity);
+            return entity == null ? null : CalendarEventMapper.ToDto(entity);
         }
 
         public async Task<bool> SaveEventAsync(CalendarEventDto dto)
         {
+            if (dto == null) return false;
+
             var entity = CalendarEventMapper.ToEntity(dto);
-            var exists = await _db.CalendarEvents.AnyAsync(e => e.Id == entity.Id);
+            var exists = await _db.CalendarEvents.AnyAsync(e => e.Id == dto.Id);
 
             if (exists)
+            {
+                entity.ModifiedAt = DateTime.UtcNow;
                 _db.CalendarEvents.Update(entity);
+            }
             else
-                await _db.CalendarEvents.AddAsync(entity);
+            {
+                entity.CreatedAt = DateTime.UtcNow;
+                _db.CalendarEvents.Add(entity);
+            }
 
             return (await _db.SaveChangesAsync()) > 0;
         }
@@ -60,11 +69,13 @@ namespace BL.Services
         public async Task<List<CalendarEventDto>> GetEventsForUserInRangeAsync(string userEmail, DateTime start, DateTime end)
         {
             var events = await _db.CalendarEvents
-                .Where(e => e.UserEmail == userEmail && e.StartTime >= start && e.EndTime <= end)
+                .Where(e =>
+                    e.UserEmail.ToLower() == userEmail.ToLower() &&
+                    e.StartTime >= start &&
+                    e.EndTime <= end)
                 .ToListAsync();
 
             return events.Select(CalendarEventMapper.ToDto).ToList();
         }
-
     }
 }

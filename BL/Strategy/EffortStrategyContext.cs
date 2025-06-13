@@ -11,6 +11,7 @@ namespace BL.Strategy
     public class EffortStrategyContext
     {
         private readonly IEffortStrategy _strategy;
+        private readonly Dictionary<Type, IEffortStrategy> _strategies;
 
         public EffortStrategyContext(IEffortStrategy strategy)
         {
@@ -31,6 +32,29 @@ namespace BL.Strategy
                 WorkSource.Document => new DocumentEditStrategy(),
                 _ => throw new NotSupportedException("Unsupported work source.")
             };
+        }
+
+        public EffortStrategyContext(IEnumerable<IEffortStrategy> strategies)
+        {
+            _strategies = strategies.ToDictionary(
+                s => s.GetType().GetInterfaces()
+                      .First(i => i.IsGenericType && i.GetGenericArguments().Length == 1)
+                      .GetGenericArguments()[0],
+                s => s
+            );
+        }
+
+        public double EstimateEffort(object source)
+        {
+            if (source == null) return 0;
+
+            var type = source.GetType();
+            if (_strategies.TryGetValue(type, out var strategy))
+            {
+                return strategy.EstimateEffort(source);
+            }
+
+            return 0;
         }
     }
 }

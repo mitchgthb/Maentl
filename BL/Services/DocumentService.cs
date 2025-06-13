@@ -1,5 +1,10 @@
-﻿using BL.Interfaces;
+﻿using BL.DTOAdapters;
+using BL.Interfaces;
 using DTO;
+using Enums;
+using Maentl.SQL.Model;
+using Maentl.SQL.Repository.Interface;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,34 +15,83 @@ namespace BL.Services
 {
     public class DocumentService : IDocumentService
     {
-        public Task<IEnumerable<DocumentDto>> GetAllForUserAsync(string userEmail)
+        private readonly IRepository<Document, Guid> _documentRepo;
+        private readonly IRepository<WorkEntry, int> _workRepo;
+
+        public DocumentService(IRepository<Document, Guid> documentRepo, IRepository<WorkEntry, int> workRepo)
         {
-            throw new NotImplementedException();
+            _documentRepo = documentRepo;
+            _workRepo = workRepo;
         }
 
-        public Task<DocumentDto> GetByIdAsync(Guid id)
+        public async Task<IEnumerable<DocumentDto>> GetAllForUserAsync(string userEmail)
         {
-            throw new NotImplementedException();
+            var docs = await _documentRepo.Query()
+                .Include(d => d.RelatedProject)
+                .Include(d => d.RelatedWorkEntry)
+                .Where(d => d.CreatedBy == userEmail)
+                .ToListAsync();
+
+            return docs.Select(DocumentMapper.ToDto).ToList();
         }
 
-        public Task<DocumentDto> UploadAsync(DocumentDto dto)
+        public async Task<DocumentDto> GetByIdAsync(Guid id)
         {
-            throw new NotImplementedException();
+            var entity = await _documentRepo.Query()
+                .Include(d => d.RelatedProject)
+                .Include(d => d.RelatedWorkEntry)
+                .FirstOrDefaultAsync(d => d.Id == id);
+
+            return DocumentMapper.ToDto(entity);
         }
 
-        public Task<bool> LinkToWorkEntryAsync(Guid documentId, int workEntryId)
+        public async Task<DocumentDto> UploadAsync(DocumentDto dto)
         {
-            throw new NotImplementedException();
+            var entity = DocumentMapper.ToEntity(dto);
+            if (entity.Id == Guid.Empty)
+            {
+                entity.Id = Guid.NewGuid();
+                entity.CreatedAt = DateTime.UtcNow;
+            }
+
+            await _documentRepo.AddAsync(entity);
+            return DocumentMapper.ToDto(entity);
         }
 
-        public Task<bool> DeleteAsync(Guid id)
+        public async Task<bool> LinkToWorkEntryAsync(Guid documentId, int workEntryId)
         {
-            throw new NotImplementedException();
+            var doc = await _documentRepo.GetByIdAsync(documentId);
+            var work = await _workRepo.GetByIdAsync(workEntryId);
+
+            if (doc == null || work == null) return false;
+
+            doc.WorkEntryId = workEntryId;
+            await _documentRepo.UpdateAsync(doc);
+            return true;
         }
 
-        public Task<bool> SaveAsync(DocumentDto dto)
+        public async Task<bool> SaveAsync(DocumentDto dto)
         {
-            throw new NotImplementedException();
+            var entity = await _documentRepo.GetByIdAsync(dto.Id);
+            if (entity == null) return false;
+
+            entity.Title = dto.Title;
+            entity.Description = dto.Description;
+            entity.FilePath = dto.FilePath;
+            entity.SourceSystem = entity.SourceSystem = dto.SourceSystem;
+            entity.ModifiedAt = DateTime.UtcNow;
+
+            await _documentRepo.UpdateAsync(entity);
+            return true;
+        }
+
+        public async Task<bool> DeleteAsync(Guid id)
+        {
+            var entity = await _documentRepo.GetByIdAsync(id);
+            if (entity == null) return false;
+
+            await _documentRepo.DeleteAsync(entity);
+            return true;
         }
     }
 }
