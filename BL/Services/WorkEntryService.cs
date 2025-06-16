@@ -2,7 +2,11 @@
 using BL.Interfaces;
 using BL.Observers;
 using DTO;
+using Enums;
+using Maentl.SQL.Model;
+using Maentl.SQL.Repository;
 using Maentl.SQL.Repository.WorkEntries;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +19,8 @@ namespace BL.Services
     {
         private readonly IWorkEntryRepository _repository;
         private readonly WorkObserverHubBridge _observer;
+        private readonly MaentlDbContext _context;
+
 
         public WorkEntryService(IWorkEntryRepository repository, WorkObserverHubBridge observer)
         {
@@ -43,6 +49,65 @@ namespace BL.Services
             await _observer.NotifyCreatedAsync(entity.Id);
 
             return WorkEntryMapper.ToDto(entity);
+        }
+
+        public async Task<WorkEntry> CreateOrUpdateWorkEntryAsync(
+            string userEmail,
+            WorkSource sourceType,
+            string sourceReference,
+            DateTime startTime,
+            DateTime endTime,
+            double effortHours,
+            WorkTypeEnum workType,
+            int complexityScore,
+            EffortMethod effortMethod = EffortMethod.Automatic,
+            string notes = null,
+            int? projectId = null)
+        {
+            // Rule: identify unique work by user + source + reference
+            var existing = await _context.WorkEntries
+                .FirstOrDefaultAsync(w =>
+                    w.UserEmail == userEmail &&
+                    w.SourceType == sourceType &&
+                    w.SourceReference == sourceReference);
+
+            if (existing != null)
+            {
+                // Update existing entry
+                existing.EffortHours = effortHours;
+                existing.WorkType = workType;
+                existing.Notes = notes;
+                existing.EndTime = endTime;
+                existing.StartTime = startTime;
+                existing.ProjectId = projectId;
+                existing.EffortMethod = effortMethod;
+
+                await _context.SaveChangesAsync();
+                return existing;
+            }
+
+            // Create new entry
+            var entry = new WorkEntry
+            {
+                UserEmail = userEmail,
+                SourceType = sourceType,
+                SourceReference = sourceReference,
+                StartTime = startTime,
+                EndTime = endTime,
+                EffortHours = effortHours,
+                EffortMethod = effortMethod,
+                WorkType = workType,
+                Notes = notes,
+                ProjectId = projectId,
+                Status = WorkState.Draft,
+                IsBillable = true,
+                IsApproved = false
+            };
+
+            _context.WorkEntries.Add(entry);
+            await _context.SaveChangesAsync();
+
+            return entry;
         }
 
         public async Task<bool> SaveAsync(WorkEntryDto dto)

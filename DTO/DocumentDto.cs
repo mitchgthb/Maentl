@@ -1,6 +1,7 @@
 ﻿using Enums;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -31,6 +32,17 @@ namespace DTO
         public string? WorkEntrySummary { get; set; }  // optional for UI
 
         public int? ProjectId { get; set; }
-        public string? ProjectName { get; set; }       // optional for UI
+
+        public string? RelatedProject { get; set; }       // optional for UI
+
+        public string FileName { get; set; }
+
+        public string SharePointId { get; set; }
+
+        public string PreviewUrl { get; set; }
+
+        public int FileSize { get; set; }
+
+        public string ContentType { get; set; }
     }
 }

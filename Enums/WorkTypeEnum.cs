@@ -12,6 +12,8 @@ namespace Enums
         Internal,
         Billable,
         Holiday,
-        SickLeave
+        SickLeave,
+        Advice,
+        Review
     }
 }

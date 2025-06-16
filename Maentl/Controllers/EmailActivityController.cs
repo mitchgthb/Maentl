@@ -1,7 +1,8 @@
 ﻿using DTO;
 using BL.Interfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using BL.Processors;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Maentl.WebApi.Controllers
 {
@@ -10,10 +11,14 @@ namespace Maentl.WebApi.Controllers
     public class EmailActivityController : ControllerBase
     {
         private readonly IEmailActivityService _emailActivityService;
+        private readonly IActivityProcessor<EmailActivityDto> _processor;
 
-        public EmailActivityController(IEmailActivityService emailActivityService)
+        public EmailActivityController(
+            IEmailActivityService emailActivityService,
+            IActivityProcessor<EmailActivityDto> processor)
         {
             _emailActivityService = emailActivityService;
+            _processor = processor;
         }
 
         [HttpGet("user/{userEmail}")]
@@ -42,6 +47,14 @@ namespace Maentl.WebApi.Controllers
         {
             var success = await _emailActivityService.DeleteAsync(id);
             return success ? Ok() : NotFound();
+        }
+
+        [Authorize]
+        [HttpPost("process")]
+        public async Task<IActionResult> ProcessEmail([FromBody] EmailActivityDto email)
+        {
+            await _processor.ProcessAsync(email);
+            return Ok("Processed.");
         }
     }
 }

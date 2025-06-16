@@ -5,9 +5,6 @@ namespace Maentl.SQL.Model
 {
     public class EmailActivity : AuditableEntityBase<Guid>
     {
-        [Key]
-        public Guid Id { get; set; }
-
         [Required]
         public string MessageId { get; set; } // Unique ID from Graph or Outlook
 
@@ -31,6 +28,10 @@ namespace Maentl.SQL.Model
 
         [Required]
         public string UserEmail { get; set; }
+
+        public string Body { get; set; }
+
+        public virtual ICollection<EmailAttachment> Attachments { get; set; } = new List<EmailAttachment>();
 
         public int? WorkEntryId { get; set; }
 

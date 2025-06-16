@@ -7,9 +7,6 @@ namespace Maentl.SQL.Model
 {
     public class Document : AuditableEntityBase<Guid>
     {
-        [Key]
-        public Guid Id { get; set; }
-
         [Required]
         [StringLength(200)]
         public string Title { get; set; }
@@ -42,6 +39,22 @@ namespace Maentl.SQL.Model
         [ForeignKey("ProjectId")]
         public Project RelatedProject { get; set; }
 
+        [StringLength(255)]
+        public string FileName { get; set; }
 
+        // SharePoint-assigned ID (e.g., ListItem ID or DriveItem ID)
+        [StringLength(255)]
+        public string SharePointId { get; set; }
+
+        // SharePoint thumbnail/preview URL
+        [StringLength(1000)]
+        public string PreviewUrl { get; set; }
+
+        // File size in bytes (optional limit)
+        public int FileSize { get; set; }
+
+        // MIME type (e.g., application/pdf)
+        [StringLength(100)]
+        public string ContentType { get; set; }
     }
 }

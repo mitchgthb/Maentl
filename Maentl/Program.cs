@@ -11,7 +11,12 @@ using Maentl.Auth;
 using Maentl.Hubs;
 using Enums;
 using Maentl.SQL.Repository.WorkEntries;
-using Maentl.SQL.Repository.Interface; // SignalRWorkObserver lives here
+using Maentl.SQL.Repository.Interface;
+using BL.Strategy;
+using BL.Processors;
+using DTO;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Identity.Web; // SignalRWorkObserver lives here
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,6 +35,13 @@ builder.Services.AddScoped<IDocumentService, DocumentService>();
 builder.Services.AddScoped<IProjectService, ProjectService>();
 builder.Services.AddScoped<ICalendarService, CalendarService>();
 builder.Services.AddScoped<IEmailActivityService, EmailActivityService>();
+builder.Services.AddScoped<IDocumentService, DocumentService>();
+builder.Services.AddScoped<ISharePointService, SharePointService>();
+builder.Services.AddScoped<IEffortService, EffortService>();
+builder.Services.AddScoped<IEmailAttachmentService, EmailAttachmentService>();
+builder.Services.AddScoped<IEmailClassifierService, EmailClassifierService>();
+builder.Services.AddScoped<IActivityProcessor<EmailActivityDto>, EmailActivityProcessor>();
+
 
 
 // Register Repository
@@ -51,9 +63,14 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddAuthentication("FakeScheme")
-    .AddScheme<AuthenticationSchemeOptions, FakeAuthenticationHandler>("FakeScheme", null);
-builder.Services.AddAuthorization();
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
+
+//builder.Services.AddAuthorization();
+
+//builder.Services.AddAuthentication("FakeScheme")
+//    .AddScheme<AuthenticationSchemeOptions, FakeAuthenticationHandler>("FakeScheme", null);
+//builder.Services.AddAuthorization();
 
 var app = builder.Build();
 

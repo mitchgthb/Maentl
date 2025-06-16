@@ -1,4 +1,5 @@
-﻿using DTO;
+using DTO;
+using Maentl.SQL.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,5 +16,7 @@ namespace BL.Interfaces
         Task<bool> LinkToWorkEntryAsync(Guid documentId, int workEntryId);
         Task<bool> SaveAsync(DocumentDto dto);
         Task<bool> DeleteAsync(Guid id);
+
+        Task SaveDocumentAsync(Document document, byte[] contentBytes);
     }
 }

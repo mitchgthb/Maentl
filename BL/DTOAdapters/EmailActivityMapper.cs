@@ -26,6 +26,8 @@ namespace BL.DTOAdapters
                 ParsingStrategy = entity.ParsingStrategy,
                 Tags = entity.Tags,
                 UserEmail = entity.UserEmail,
+                Body = entity.Body,
+                Attachments = (ICollection<EmailAttachmentDto>)entity.Attachments,
                 WorkEntryId = entity.WorkEntryId
             };
         }
@@ -46,6 +48,8 @@ namespace BL.DTOAdapters
                 ParsingStrategy = dto.ParsingStrategy,
                 Tags = dto.Tags,
                 UserEmail = dto.UserEmail,
+                Body = dto.Body,
+                Attachments = (ICollection<EmailAttachment>)dto.Attachments,
                 WorkEntryId = dto.WorkEntryId
             };
         }

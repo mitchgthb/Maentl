@@ -1,4 +1,5 @@
-﻿using System;
+using Maentl.SQL.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,7 @@ namespace DTO
 {
     public class EmailActivityDto
     {
+        public int? ProjectId { get; set; }
         public Guid Id { get; set; }
 
         public string MessageId { get; set; }
@@ -27,6 +29,10 @@ namespace DTO
         public string Tags { get; set; }
 
         public string UserEmail { get; set; }
+
+        public string Body { get; set; }
+
+        public virtual ICollection<EmailAttachmentDto> Attachments { get; set; } = new List<EmailAttachmentDto>();
 
         public int? WorkEntryId { get; set; }
 

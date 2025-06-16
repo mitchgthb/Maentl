@@ -1,7 +1,7 @@
 ﻿using DTO;
 using Maentl.SQL.Model;
 
-namespace BL.Strategy
+namespace BL.Strategy.Email
 {
     public class EmailEffortStrategy : IEffortStrategy
     {

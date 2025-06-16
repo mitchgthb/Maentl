@@ -13,6 +13,7 @@ namespace Enums
         FileCheckIn = 2,
         CalendarParser = 3,
         EmailEstimation = 4,
-        SharePointSync = 5
+        SharePointSync = 5,
+        Automatic = 6
     }
 }

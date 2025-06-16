@@ -1,4 +1,4 @@
-﻿using BL.DTOAdapters;
+using BL.DTOAdapters;
 using BL.Interfaces;
 using DTO;
 using Enums;
@@ -17,6 +17,7 @@ namespace BL.Services
     {
         private readonly IRepository<Document, Guid> _documentRepo;
         private readonly IRepository<WorkEntry, int> _workRepo;
+        private readonly ISharePointService _sharePointService;
 
         public DocumentService(IRepository<Document, Guid> documentRepo, IRepository<WorkEntry, int> workRepo)
         {
@@ -83,6 +84,24 @@ namespace BL.Services
 
             await _documentRepo.UpdateAsync(entity);
             return true;
+        }
+
+        public async Task SaveDocumentAsync(Document document, byte[] contentBytes)
+        {
+            // 1. Upload to SharePoint
+            var uploadResult = await _sharePointService.UploadFileAsync(
+                contentBytes,
+                document.FileName,
+                document.ProjectId);
+
+            // 2. Apply SharePoint metadata to Document entity
+            document.FilePath = uploadResult.FileUrl;         // This is the full URL to the file
+            document.SharePointId = uploadResult.DocId;       // SharePoint internal ID (e.g., ListItem ID)
+            document.SourceSystem = SourceSystem.SharePoint;  // Enum value
+            document.ModifiedAt = DateTime.UtcNow;
+
+            // 3. Save to database
+            await _documentRepo.AddAsync(document);
         }
 
         public async Task<bool> DeleteAsync(Guid id)
